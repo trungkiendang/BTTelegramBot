@@ -1,0 +1,26 @@
+<component name="libraryTable">
+  <library name="com.github.pengrad:java-telegram-bot-api:5.0.1" type="repository">
+    <properties maven-id="com.github.pengrad:java-telegram-bot-api:5.0.1" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/java-telegram-bot-api-5.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gson-2.8.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/okhttp-3.12.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/okio-1.15.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/logging-interceptor-3.12.10.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/java-telegram-bot-api-5.0.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gson-2.8.6-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/okhttp-3.12.10-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/okio-1.15.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/logging-interceptor-3.12.10-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/java-telegram-bot-api-5.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gson-2.8.6-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/okhttp-3.12.10-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/okio-1.15.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/logging-interceptor-3.12.10-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
