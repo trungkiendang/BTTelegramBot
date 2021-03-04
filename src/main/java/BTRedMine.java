@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 public class BTRedMine {
     private static BTRedMine instance;
     int offset = 0;
-    String urlIssue = "http://10.192.1.23/redmine/issues.json?key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b&limit=100&offset=%d&project_id=%d";
-    String urlPrj = "http://10.192.1.23/redmine/projects.json?key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b&limit=100&offset=0";
+    String urlIssue = "http://14.160.26.174:1080/redmine/issues.json?key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b&limit=100&offset=%d&project_id=%d";
+    String urlPrj = "http://14.160.26.174:1080/redmine/projects.json?key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b&limit=100&offset=0";
 
     public static BTRedMine getInstance() {
         if (instance == null)

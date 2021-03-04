@@ -22,7 +22,8 @@ public class BotJob implements Job {
         Calendar cal = Calendar.getInstance();
         int h = cal.get(Calendar.HOUR_OF_DAY);
         int m = cal.get(Calendar.MINUTE);
-        if (h == 16 && m == 59) {
+        int _s = cal.get(Calendar.SECOND);
+        if (h == 16 && m == 59 && _s == 0) {
             List<String> lstStr = BTRedMine.getInstance().RDP();
             for (String s: lstStr) {
                 new BotJob().SendMessage(s);

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class exc {
     public static final String TOKEN = "1666976863:AAHcO2Q9IkQsPOTPyYWlChBeLjcQxIob61E";
-    public static final String CHATID = "-1424313111";
+    public static final String CHATID = "-564253083";//"-1001424313111";
 
     public static void main(String[] args) {
         System.out.println("---Start bot telegram---");
@@ -54,6 +54,7 @@ public class exc {
                             }
                         }
                     } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
                 return UpdatesListener.CONFIRMED_UPDATES_ALL;
             }
