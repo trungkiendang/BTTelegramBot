@@ -7,9 +7,12 @@ import org.quartz.impl.StdSchedulerFactory;
 import java.util.List;
 
 public class exc {
-
+    public static final String TOKEN = "1666976863:AAHcO2Q9IkQsPOTPyYWlChBeLjcQxIob61E";
+    public static final String CHATID = "-1424313111";
 
     public static void main(String[] args) {
+        System.out.println("---Start bot telegram---");
+
         JobDetail job = JobBuilder.newJob(BotJob.class)
                 .withIdentity("Telegram bot", "BT").build();
 
@@ -21,32 +24,37 @@ public class exc {
         Scheduler schedule = null;
         try {
             schedule = new StdSchedulerFactory().getScheduler();
+            System.out.println("---Start scheduler---");
             schedule.start();
             schedule.scheduleJob(job, trig);
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
 
-        TelegramBot bot = new TelegramBot(BotJob.TOKEN);
+        TelegramBot bot = new TelegramBot(TOKEN);
         bot.setUpdatesListener(new UpdatesListener() {
             @Override
             public int process(List<Update> updates) {
-                for (Update u : updates) {
-                    if (u.message().chat().id() == -564253083) {
-                        if (u.message().text().contains("/start")) {
-                             new BotJob().SendMessage(BTRedMine.getInstance().Report());
-                            //BTRedMine.getInstance().Report();
-//                            String[] lst = BTRedMine.getInstance().getAllProjects().stream().map(project -> project.name).toArray(String[]::new);
-//
-//                            Keyboard replyKeyboardMarkup = new ReplyKeyboardMarkup(lst).oneTimeKeyboard(true)   // optional
-//                                    .resizeKeyboard(true)    // optional
-//                                    .selective(true);        // optional
-//                            SendResponse response = bot.execute(new SendMessage(u.message().chat().id(), "Hello!").parseMode(ParseMode.HTML) .replyMarkup(replyKeyboardMarkup));
-//                            boolean ok = response.isOk();
-//                            Message message = response.message();
+                for (Update u : updates)
+                    try {
+                        if (u.message().chat().id() == Long.parseLong(CHATID)) {
+                            if (u.message().text() != null) {
+                                String msg = u.message().text();
+                                if (msg.contains("/help"))
+                                    new BotJob().SendMessage("Bot hỗ trợ việc kiểm tra công việc trên hệ thống Redmine - B&T \n" +
+                                            "Sử dụng cú pháp: <b>/check</b> để kiểm tra trạng thái các công việc.");
+                                if (msg.contains("/check")) {
+                                    new BotJob().SendMessage("<i>Đang lấy thông tin công việc, vui lòng đợi...</i>");
+                                    List<String> lstStr = BTRedMine.getInstance().RDP();
+                                    for (String s : lstStr) {
+                                        new BotJob().SendMessage(s);
+                                    }
+
+                                }
+                            }
                         }
+                    } catch (Exception e) {
                     }
-                }
                 return UpdatesListener.CONFIRMED_UPDATES_ALL;
             }
         });

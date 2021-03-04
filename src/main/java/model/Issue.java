@@ -2,7 +2,7 @@ package model;
 
 import java.sql.Date;
 
-public class Issue{
+public class Issue {
     public int id;
     public Project project;
     public Tracker tracker;
@@ -21,6 +21,30 @@ public class Issue{
     public Date updated_on;
     public Object closed_on;
     public AssignedTo assigned_to;
+
+    private int hashCode;
+
+    @Override
+    public boolean equals(Object obj) {
+        // TODO Auto-generated method stub
+        if (obj instanceof Issue) {
+            Issue temp = (Issue) obj;
+            if (this.id == temp.id) {
+                hashCode = temp.hashCode;
+                return true;
+            } else {
+                hashCode = super.hashCode();
+                return false;
+            }
+        }
+        return false;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 
 }
 

@@ -1,8 +1,8 @@
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Utils {
 
@@ -27,6 +27,9 @@ public class Utils {
             return status.idStatus;
         }
 
+        public static String getStatusName(Status status) {
+            return status.name();
+        }
     }
 
     public static String addDays(Date date, Integer days) {
@@ -45,6 +48,11 @@ public class Utils {
             );
         }
         return parts;
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> map = new ConcurrentHashMap<>();
+        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
 }

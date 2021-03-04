@@ -12,10 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BTRedMine {
@@ -102,9 +100,11 @@ public class BTRedMine {
                     }
                     lst.addAll(r.issues);
                 }
+                offset = 0;
                 return lst;
             } else
-                return _rootIssue.issues;
+                offset = 0;
+            return _rootIssue.issues;
         }
         return new ArrayList<>();
     }
@@ -138,8 +138,66 @@ public class BTRedMine {
             sb.append("\n");
             sb.append("----------------");
             sb.append("\n");
-            offset = 0;
         }
         return sb.toString();
+    }
+
+    public List<String> RDP() {
+        List<String> lstStr = new ArrayList<>();
+        List<Issue> lstIssue = new ArrayList<>();
+        //lay het cac project
+        List<Project> lstProject = getAllProjects();
+        for (Project p : lstProject) {
+            List<Issue> _l = getAllIssuesInProject(p.id);
+            // System.out.println(">>>: " + _l.size());
+            lstIssue.addAll(_l);
+        }
+        lstIssue = lstIssue.stream().filter(Utils.distinctByKey(p -> p.id)).collect(Collectors.toList());
+
+        lstIssue = lstIssue.stream().filter(m -> m.assigned_to != null).collect(Collectors.toList());
+        Map<String, List<Issue>> lstGroupded = lstIssue.stream().collect(Collectors.groupingBy(w -> w.assigned_to.name));
+        Set<String> groupedNameKeySet = lstGroupded.keySet();
+        List<String> groupedNameKeySetSorted = new ArrayList<>(groupedNameKeySet).stream().sorted().collect(Collectors.toList());
+        Date date = new Date();
+        SimpleDateFormat xxx = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat yyy = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Báo cáo ngày: ");
+        sb.append(yyy.format(date));
+        sb.append("\n");
+        lstStr.add(sb.toString());
+
+        sb = new StringBuilder();
+        for (String s : groupedNameKeySetSorted) {
+            List<Issue> _ls = lstGroupded.get(s).stream().filter(m -> m.start_date.equals(formatter.format(date))).collect(Collectors.toList());
+            if (_ls.size() != 0) {
+                sb.append("<b>");
+                sb.append(s);
+                sb.append(":");
+                sb.append("</b>");
+                sb.append("\n");
+                for (Issue i : _ls) {
+                    sb.append(i.project.name);
+                    sb.append(": ");
+                    sb.append(i.subject);
+                    sb.append(" - ");
+                    sb.append(i.status.name);
+                    sb.append("\n");
+                }
+                sb.append("-------------------------\n");
+                lstStr.add(sb.toString());
+                sb = new StringBuilder();
+            }
+        }
+        sb = new StringBuilder();
+        sb.append("<b>Thời gian tổng hợp công việc:</b> ");
+        sb.append("<i>");
+        sb.append(xxx.format(new Date()));
+        sb.append("</i>");
+        lstStr.add(sb.toString());
+        return lstStr;
+        //return sb.toString();
+
     }
 }
