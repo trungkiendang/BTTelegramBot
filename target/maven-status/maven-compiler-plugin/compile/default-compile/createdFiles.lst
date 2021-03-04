@@ -1,0 +1,16 @@
+exc.class
+model\Priority.class
+BTRedMine.class
+Utils.class
+model\Parent.class
+Utils$Status.class
+model\Issue.class
+model\Status.class
+BotJob.class
+model\Author.class
+model\Tracker.class
+model\AssignedTo.class
+model\Project.class
+model\RootProject.class
+exc$1.class
+model\RootIssue.class
