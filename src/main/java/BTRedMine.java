@@ -142,14 +142,13 @@ public class BTRedMine {
         return sb.toString();
     }
 
-    public List<String> RDP() {
-        List<String> lstStr = new ArrayList<>();
+    public void RDP(String chatId) {
         List<Issue> lstIssue = new ArrayList<>();
         //lay het cac project
         List<Project> lstProject = getAllProjects();
         for (Project p : lstProject) {
             List<Issue> _l = getAllIssuesInProject(p.id);
-            // System.out.println(">>>: " + _l.size());
+            ErrorLogger.getInstance().log("Project size: " + _l.size());
             lstIssue.addAll(_l);
         }
         lstIssue = lstIssue.stream().filter(Utils.distinctByKey(p -> p.id)).collect(Collectors.toList());
@@ -166,8 +165,7 @@ public class BTRedMine {
         sb.append("Báo cáo ngày: ");
         sb.append(yyy.format(date));
         sb.append("\n");
-        lstStr.add(sb.toString());
-
+        new BotJob().SendMessage(sb.toString(), chatId);
         sb = new StringBuilder();
         for (String s : groupedNameKeySetSorted) {
             List<Issue> _ls = lstGroupded.get(s).stream().filter(m -> m.start_date.equals(formatter.format(date))).collect(Collectors.toList());
@@ -184,9 +182,21 @@ public class BTRedMine {
                     sb.append(" - ");
                     sb.append(i.status.name);
                     sb.append("\n");
+                    if (i.description.length() > 0) {
+                        sb.append("Mô tả công việc:\n");
+                        sb.append("<i>");
+                        sb.append(i.description);
+                        sb.append("</i>\n");
+                    }
+
+//                    if (i.status.id == Utils.Status.getIdStatus(Utils.Status.DaThucHien) ||
+//                            i.status.id == Utils.Status.getIdStatus(Utils.Status.HoanThanh)) {
+//                        sb.append("Thời gian thực hiện: ");
+//                        sb.append(i.)
+//                    }
                 }
                 sb.append("-------------------------\n");
-                lstStr.add(sb.toString());
+                new BotJob().SendMessage(sb.toString(), chatId);
                 sb = new StringBuilder();
             }
         }
@@ -195,9 +205,6 @@ public class BTRedMine {
         sb.append("<i>");
         sb.append(xxx.format(new Date()));
         sb.append("</i>");
-        lstStr.add(sb.toString());
-        return lstStr;
-        //return sb.toString();
-
+        new BotJob().SendMessage(sb.toString(), chatId);
     }
 }
