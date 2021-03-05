@@ -1,9 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import model.Issue;
-import model.Project;
-import model.RootIssue;
-import model.RootProject;
+import model.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +18,8 @@ public class BTRedMine {
     int offset = 0;
     String urlIssue = "http://14.160.26.174:1080/redmine/issues.json?key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b&limit=100&offset=%d&project_id=%d";
     String urlPrj = "http://14.160.26.174:1080/redmine/projects.json?key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b&limit=100&offset=0";
+
+    String urlDetailIssue = "http://14.160.26.174:1080/redmine/issues/%d.json?include=journals&key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b";
 
     public static BTRedMine getInstance() {
         if (instance == null)
@@ -76,6 +75,32 @@ public class BTRedMine {
                 // print result
                 Gson g = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
                 return g.fromJson(response.toString(), RootIssue.class);
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Issue getDetailsIssue(int id) {
+        try {
+            URL obj = new URL(String.format(urlDetailIssue, id));
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                // print result
+                Gson g = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
+                return g.fromJson(response.toString(), RootDetailIssue.class).issue;
             } else {
                 return null;
             }

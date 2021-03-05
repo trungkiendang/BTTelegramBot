@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Date;
+import java.util.List;
 
 public class Issue {
     public int id;
@@ -9,6 +10,7 @@ public class Issue {
     public Status status;
     public Priority priority;
     public Author author;
+    public AssignedTo assigned_to;
     public Parent parent;
     public String subject;
     public String description;
@@ -17,10 +19,13 @@ public class Issue {
     public int done_ratio;
     public boolean is_private;
     public Object estimated_hours;
+    public Object total_estimated_hours;
+    public double spent_hours;
+    public double total_spent_hours;
     public Date created_on;
     public Date updated_on;
     public Object closed_on;
-    public AssignedTo assigned_to;
+    public List<Journal> journals;
 
     private int hashCode;
 

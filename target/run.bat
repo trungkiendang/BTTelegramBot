@@ -1,1 +1,1 @@
-java -jar BTTelegramBot-1.0-jar-with-dependencies.jar
+java -Dfile.encoding="utf-8" -jar BTTelegramBot-1.0-jar-with-dependencies.jar
