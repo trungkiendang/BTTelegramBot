@@ -1,9 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import model.Issue;
-import model.Project;
-import model.RootIssue;
-import model.RootProject;
+import model.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +18,8 @@ public class BTRedMine {
     int offset = 0;
     String urlIssue = "http://14.160.26.174:1080/redmine/issues.json?key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b&limit=100&offset=%d&project_id=%d";
     String urlPrj = "http://14.160.26.174:1080/redmine/projects.json?key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b&limit=100&offset=0";
+
+    String urlDetailIssue = "http://14.160.26.174:1080/redmine/issues/%d.json?include=journals&key=e535c06d7b1dd1cf1c7558da605d631ecd09e15b";
 
     public static BTRedMine getInstance() {
         if (instance == null)
@@ -76,6 +75,32 @@ public class BTRedMine {
                 // print result
                 Gson g = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
                 return g.fromJson(response.toString(), RootIssue.class);
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Issue getDetailsIssue(int id) {
+        try {
+            URL obj = new URL(String.format(urlDetailIssue, id));
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                // print result
+                Gson g = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
+                return g.fromJson(response.toString(), RootDetailIssue.class).issue;
             } else {
                 return null;
             }
@@ -142,14 +167,13 @@ public class BTRedMine {
         return sb.toString();
     }
 
-    public List<String> RDP() {
-        List<String> lstStr = new ArrayList<>();
+    public void RDP(String chatId) {
         List<Issue> lstIssue = new ArrayList<>();
         //lay het cac project
         List<Project> lstProject = getAllProjects();
         for (Project p : lstProject) {
             List<Issue> _l = getAllIssuesInProject(p.id);
-            // System.out.println(">>>: " + _l.size());
+            ErrorLogger.getInstance().log("Project size: " + _l.size());
             lstIssue.addAll(_l);
         }
         lstIssue = lstIssue.stream().filter(Utils.distinctByKey(p -> p.id)).collect(Collectors.toList());
@@ -166,8 +190,7 @@ public class BTRedMine {
         sb.append("Báo cáo ngày: ");
         sb.append(yyy.format(date));
         sb.append("\n");
-        lstStr.add(sb.toString());
-
+        new BotJob().SendMessage(sb.toString(), chatId);
         sb = new StringBuilder();
         for (String s : groupedNameKeySetSorted) {
             List<Issue> _ls = lstGroupded.get(s).stream().filter(m -> m.start_date.equals(formatter.format(date))).collect(Collectors.toList());
@@ -184,9 +207,21 @@ public class BTRedMine {
                     sb.append(" - ");
                     sb.append(i.status.name);
                     sb.append("\n");
+                    if (i.description.length() > 0) {
+                        sb.append("Mô tả công việc:\n");
+                        sb.append("<i>");
+                        sb.append(i.description);
+                        sb.append("</i>\n");
+                    }
+
+//                    if (i.status.id == Utils.Status.getIdStatus(Utils.Status.DaThucHien) ||
+//                            i.status.id == Utils.Status.getIdStatus(Utils.Status.HoanThanh)) {
+//                        sb.append("Thời gian thực hiện: ");
+//                        sb.append(i.)
+//                    }
                 }
                 sb.append("-------------------------\n");
-                lstStr.add(sb.toString());
+                new BotJob().SendMessage(sb.toString(), chatId);
                 sb = new StringBuilder();
             }
         }
@@ -195,9 +230,6 @@ public class BTRedMine {
         sb.append("<i>");
         sb.append(xxx.format(new Date()));
         sb.append("</i>");
-        lstStr.add(sb.toString());
-        return lstStr;
-        //return sb.toString();
-
+        new BotJob().SendMessage(sb.toString(), chatId);
     }
 }
