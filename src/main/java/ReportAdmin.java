@@ -1,4 +1,6 @@
+import model.Detail;
 import model.Issue;
+import model.Journal;
 import model.Project;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -12,6 +14,12 @@ import java.util.stream.Collectors;
 
 public class ReportAdmin {
     public static void main(String[] args) {
+        ///BTRedMine.getInstance().RDP("xxx");
+        createExcel();
+    }
+
+    static void createExcel()
+    {
         Workbook workbook = new XSSFWorkbook();
         List<Issue> lstIssue = new ArrayList<>();
         List<Project> lstProject = BTRedMine.getInstance().getAllProjects();
@@ -30,16 +38,19 @@ public class ReportAdmin {
         for (String s : groupedNameKeySetSorted) {
             //moi ng 1 sheet
             Sheet sheet = workbook.createSheet(s);
-            sheet.setColumnWidth(0, 10000);
-            sheet.setColumnWidth(1, 15000);
-            sheet.setColumnWidth(2, 4000);
-            sheet.setColumnWidth(3, 25000);
-            sheet.setColumnWidth(4, 4000);
+            sheet.setColumnWidth(0, 2000);
+            sheet.setColumnWidth(1, 10000);
+            sheet.setColumnWidth(2, 15000);
+            sheet.setColumnWidth(3, 4000);
+            sheet.setColumnWidth(4, 25000);
             sheet.setColumnWidth(5, 4000);
             sheet.setColumnWidth(6, 4000);
             sheet.setColumnWidth(7, 4000);
             sheet.setColumnWidth(8, 4000);
             sheet.setColumnWidth(9, 4000);
+            sheet.setColumnWidth(10, 4000);
+            sheet.setColumnWidth(11, 4000);
+            sheet.setColumnWidth(12, 4000);
 
             Row header = sheet.createRow(0);
             CellStyle headerStyle = workbook.createCellStyle();
@@ -55,43 +66,55 @@ public class ReportAdmin {
 
             //header
             Cell headerCell = header.createCell(0);
-            headerCell.setCellValue("Dự án");
+            headerCell.setCellValue("ID");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(1);
-            headerCell.setCellValue("Công việc");
+            headerCell.setCellValue("Dự án");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(2);
-            headerCell.setCellValue("Loại");
+            headerCell.setCellValue("Công việc");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(3);
-            headerCell.setCellValue("Mô tả");
+            headerCell.setCellValue("Loại");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(4);
-            headerCell.setCellValue("Tình trạng");
+            headerCell.setCellValue("Mô tả");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(5);
-            headerCell.setCellValue("Ngày tạo việc");
+            headerCell.setCellValue("Tình trạng");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(6);
-            headerCell.setCellValue("Ngày hết hạn");
+            headerCell.setCellValue("Ngày nhận việc");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(7);
-            headerCell.setCellValue("Ngày cập nhật");
+            headerCell.setCellValue("Ngày hết hạn");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(8);
-            headerCell.setCellValue("Thời gian dự kiến thực tế");
+            headerCell.setCellValue("Ngày cập nhật");
             headerCell.setCellStyle(headerStyle);
 
             headerCell = header.createCell(9);
+            headerCell.setCellValue("Thời gian dự kiến thực hiện");
+            headerCell.setCellStyle(headerStyle);
+
+            headerCell = header.createCell(10);
             headerCell.setCellValue("Thời gian thực hiện thực tế");
+            headerCell.setCellStyle(headerStyle);
+
+            headerCell = header.createCell(11);
+            headerCell.setCellValue("Người giao việc");
+            headerCell.setCellStyle(headerStyle);
+
+            headerCell = header.createCell(12);
+            headerCell.setCellValue("Ngày giao việc");
             headerCell.setCellStyle(headerStyle);
 
             CellStyle style = workbook.createCellStyle();
@@ -108,49 +131,83 @@ public class ReportAdmin {
                 Issue _i = _ls.get(i);
                 Row row = sheet.createRow(i + 1);
                 Cell cell = row.createCell(0);
-                cell.setCellValue(_i.project.name);
+                cell.setCellValue(_i.id);
                 cell.setCellStyle(styleBold);
 
                 cell = row.createCell(1);
-                cell.setCellValue(_i.subject);
+                cell.setCellValue(_i.project.name);
                 cell.setCellStyle(style);
 
                 cell = row.createCell(2);
-                cell.setCellValue(_i.tracker.name);
+                cell.setCellValue(_i.subject);
                 cell.setCellStyle(style);
 
                 cell = row.createCell(3);
-                cell.setCellValue(_i.description);
+                cell.setCellValue(_i.tracker.name);
                 cell.setCellStyle(style);
 
                 cell = row.createCell(4);
+                cell.setCellValue(_i.description);
+                cell.setCellStyle(style);
+
+                cell = row.createCell(5);
                 cell.setCellValue(_i.status.name);
                 cell.setCellStyle(styleBold);
 
-                cell = row.createCell(5);
-                cell.setCellValue(xxx.format(_i.created_on));
-                cell.setCellStyle(style);
+                Issue detail = BTRedMine.getInstance().getDetailsIssue(_i.id);
 
+                //Lay ra thoi gian nhan viec
+                Journal journal = detail.journals.stream().filter(m -> m.details.stream()
+                        .allMatch(n -> n.name.equals("status_id") &&
+                                (n.old_value.equals("1") && n.new_value.equals("3")
+                                        || n.old_value.equals("1") && n.new_value.equals("2"))
+                        )).findFirst().orElse(null);
+
+                //Thoi gian nhan viec
                 cell = row.createCell(6);
-                cell.setCellValue(_i.due_date);
+                if (journal != null) {
+                    cell.setCellValue(xxx.format(journal.created_on));
+                } else {
+                    cell.setCellValue("");
+                }
+
                 cell.setCellStyle(style);
 
                 cell = row.createCell(7);
-                cell.setCellValue(xxx.format(_i.updated_on));
+                cell.setCellValue(_i.due_date);
                 cell.setCellStyle(style);
 
-                Issue detail = BTRedMine.getInstance().getDetailsIssue(_i.id);
-
-
+                //Thoi gian hoan thanh/da thuc hien con viec
+                journal = detail.journals.stream().filter(m -> m.details.stream()
+                        .allMatch(n -> n.name.equals("status_id") &&
+                                (n.old_value.equals("2") && n.new_value.equals("3")
+                                        || n.old_value.equals("2") && n.new_value.equals("8")
+                                        || n.old_value.equals("2") && n.new_value.equals("4"))
+                        )).findFirst().orElse(null);
                 cell = row.createCell(8);
+                if (journal != null)
+                    cell.setCellValue(xxx.format(journal.created_on));
+                else
+                    cell.setCellValue("");
+                cell.setCellStyle(style);
+
+
+                cell = row.createCell(9);
                 if (detail.total_estimated_hours != null)
                     cell.setCellValue(detail.total_estimated_hours.toString());
                 else
                     cell.setCellValue("");
                 cell.setCellStyle(style);
 
-                cell = row.createCell(9);
+                cell = row.createCell(10);
                 cell.setCellValue(detail.total_spent_hours);
+                cell.setCellStyle(style);
+
+                cell = row.createCell(11);
+                cell.setCellValue(_i.author.name);
+                cell.setCellStyle(style);
+                cell = row.createCell(12);
+                cell.setCellValue(xxx.format(_i.created_on));
                 cell.setCellStyle(style);
             }
         }
