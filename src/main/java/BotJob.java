@@ -28,7 +28,7 @@ public class BotJob implements Job {
         int _s = cal.get(Calendar.SECOND);
         if (m % 3 == 0 && _s == 0)
             ErrorLogger.getInstance().log("Ping... " + h + ":" + m + ":" + _s);
-        if (h == 16 && m == 59 && _s == 40) {
+        if (h == 17 && m == 30 && _s == 40) {
             BTRedMine.getInstance().RDP(exc.CHATID);
         }
     }

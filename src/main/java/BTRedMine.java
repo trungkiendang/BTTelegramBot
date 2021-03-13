@@ -190,10 +190,13 @@ public class BTRedMine {
         sb.append("Báo cáo ngày: ");
         sb.append(yyy.format(date));
         sb.append("\n");
+        //System.out.println(sb.toString());
         new BotJob().SendMessage(sb.toString(), chatId);
         sb = new StringBuilder();
         for (String s : groupedNameKeySetSorted) {
             List<Issue> _ls = lstGroupded.get(s).stream().filter(m -> m.start_date.equals(formatter.format(date))).collect(Collectors.toList());
+            // Lọc ra các công việc đang được tiến hành/hoàn thành/ phản hồi/ trong ngày hôm đó
+            _ls = _ls.stream().filter(m -> m.status.id != Utils.Status.getIdStatus(Utils.Status.KhoiTao)).collect(Collectors.toList());
             if (_ls.size() != 0) {
                 sb.append("<b>");
                 sb.append(s);
@@ -204,23 +207,34 @@ public class BTRedMine {
                     sb.append(i.project.name);
                     sb.append(": ");
                     sb.append(i.subject);
-                    sb.append(" - ");
+                    sb.append("\n");
+                    sb.append("Trạng thái: ");
                     sb.append(i.status.name);
                     sb.append("\n");
+                    Issue detail = BTRedMine.getInstance().getDetailsIssue(i.id);
+                    if (detail.estimated_hours != null) {
+                        sb.append("<b>Dự kiến thực hiện: </b>");
+                        sb.append(detail.estimated_hours.toString());
+                        sb.append("\n");
+                    }
+                    sb.append("<b>Thực tế: </b>");
+                    sb.append(detail.spent_hours);
+                    sb.append("\n");
                     if (i.description.length() > 0) {
-                        sb.append("Mô tả công việc:\n");
+                        sb.append("\nMô tả công việc:\n");
                         sb.append("<i>");
                         sb.append(i.description);
-                        sb.append("</i>\n");
+                        sb.append("</i>");
+                        sb.append("\n");
                     }
-
-//                    if (i.status.id == Utils.Status.getIdStatus(Utils.Status.DaThucHien) ||
-//                            i.status.id == Utils.Status.getIdStatus(Utils.Status.HoanThanh)) {
-//                        sb.append("Thời gian thực hiện: ");
-//                        sb.append(i.)
+//
+//                    if (i.status.id == Utils.Status.getIdStatus(Utils.Status.PhanHoi))
+//                    {
+//                        sb.append("<b>Nội dung phản hồi: </b>");
 //                    }
                 }
                 sb.append("-------------------------\n");
+                //System.out.println(sb.toString());
                 new BotJob().SendMessage(sb.toString(), chatId);
                 sb = new StringBuilder();
             }
@@ -230,6 +244,7 @@ public class BTRedMine {
         sb.append("<i>");
         sb.append(xxx.format(new Date()));
         sb.append("</i>");
+        //System.out.println(sb.toString());
         new BotJob().SendMessage(sb.toString(), chatId);
     }
 }
